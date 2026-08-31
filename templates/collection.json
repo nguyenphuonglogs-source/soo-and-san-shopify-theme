@@ -1,0 +1,8 @@
+{
+  "sections": {
+    "announcement": { "type": "pdp-v2-announcement" },
+    "main": { "type": "pdp-v2-main-collection" },
+    "footer": { "type": "pdp-v2-footer" }
+  },
+  "order": ["announcement", "main", "footer"]
+}

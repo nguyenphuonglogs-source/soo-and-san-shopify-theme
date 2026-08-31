@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="gift-card">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ shop.name }} - Gift Card</title>
+  <meta name="robots" content="noindex">
+  <style>
+    body { margin:0; font-family:'DM Sans',sans-serif; background:#EDE9E3; color:#111111; }
+    .gc-wrap { max-width:480px; margin:64px auto; padding:32px; background:#FDFCF9; text-align:center; }
+    .gc-code { font:20px/1 'IBM Plex Mono',monospace; letter-spacing:0.1em; border:1px dashed #AAA49C; padding:16px; margin:20px 0; }
+    .gc-balance { font-size:24px; font-weight:500; margin:12px 0; }
+    .gc-print { margin-top:20px; font-size:12px; }
+  </style>
+</head>
+<body>
+  <div class="gc-wrap">
+    <h1 style="font-family:'Newsreader',serif;font-weight:400;font-size:26px">{{ shop.name }} gift card</h1>
+    <div class="gc-balance">{{ gift_card.balance | money }}</div>
+    <div class="gc-code">{{ gift_card.code | format_code }}</div>
+    {%- if gift_card.qr_identifier -%}
+      <div>{{ gift_card | qr_code: 160 }}</div>
+    {%- endif -%}
+    <p>Use this code at checkout to redeem your gift card.</p>
+    <a class="gc-print" href="javascript:window.print();">Print this gift card</a>
+  </div>
+</body>
+</html>

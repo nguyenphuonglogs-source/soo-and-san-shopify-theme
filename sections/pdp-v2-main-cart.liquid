@@ -1,0 +1,33 @@
+<div class="pdp-v2">
+  <div style="padding:32px 20px;font-family:'DM Sans',sans-serif;max-width:640px;margin:0 auto">
+    <h1 style="font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:0 0 20px">Your bag</h1>
+    {%- if cart.item_count == 0 -%}
+      <p style="font-size:13px;color:#66615B">Your bag is empty. <a href="{{ routes.all_products_collection_url }}">Continue shopping</a></p>
+    {%- else -%}
+      {%- form 'cart' -%}
+        {%- for item in cart.items -%}
+          <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #DDD9D3;align-items:center">
+            <span style="width:64px;height:64px;background:#F1ECE5;flex:none;overflow:hidden">
+              {%- if item.image != blank -%}{{ item.image | image_url: width: 128 | image_tag: alt: item.title, style: 'width:100%;height:100%;object-fit:cover' }}{%- endif -%}
+            </span>
+            <span style="flex:1;font-size:13px">{{ item.product.title }}</span>
+            <input type="number" name="updates[{{ item.key }}]" value="{{ item.quantity }}" min="0" style="width:56px;border:1px solid #DDD9D3;padding:6px;font-size:13px">
+            <span style="font-size:13px;font-weight:500;min-width:70px;text-align:right">{{ item.final_line_price | money }}</span>
+          </div>
+        {%- endfor -%}
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:16px">
+          <span style="font-size:14px;font-weight:700">Subtotal</span>
+          <span style="font-size:18px;font-weight:500">{{ cart.total_price | money }}</span>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button type="submit" name="update" style="border:1px solid #111111;background:none;padding:12px 20px;font-size:12px;letter-spacing:0.1em;cursor:pointer">Update bag</button>
+          <button type="submit" name="checkout" style="flex:1;background:#111111;color:#FDFCF9;border:none;padding:12px 20px;font-size:12px;letter-spacing:0.14em;cursor:pointer">Checkout</button>
+        </div>
+      {%- endform -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{ "name": "PDP v2 — Cart" }
+{% endschema %}
