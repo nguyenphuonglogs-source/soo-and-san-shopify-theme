@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "announcement": { "type": "pdp-v2-announcement" },
+    "hero": { "type": "pdp-v2-hero" },
+    "faves": { "type": "pdp-v2-faves" },
+    "usp": { "type": "pdp-v2-usp" },
+    "story": { "type": "pdp-v2-story" },
+    "ugc": { "type": "pdp-v2-ugc" },
+    "reviews": { "type": "pdp-v2-reviews" },
+    "press": { "type": "pdp-v2-press" },
+    "newsletter": { "type": "pdp-v2-newsletter" },
+    "footer": { "type": "pdp-v2-footer" }
+  },
+  "order": [
+    "announcement",
+    "hero",
+    "faves",
+    "usp",
+    "story",
+    "ugc",
+    "reviews",
+    "press",
+    "newsletter",
+    "footer"
+  ]
+}

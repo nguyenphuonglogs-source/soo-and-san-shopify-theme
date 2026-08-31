@@ -1,0 +1,103 @@
+<div class="pdp-v2" id="pdp-v2-reviews">
+  <div class="pdp-v2__reviews">
+    <div class="pdp-v2__reviews-summary">
+      <div class="pdp-v2__reviews-summary-title">{{ section.settings.heading | default: 'Love from the community' | upcase }}</div>
+      <div class="pdp-v2__reviews-score">{{ section.settings.rating_value }}</div>
+      <div class="pdp-v2__reviews-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="pdp-v2__reviews-count">{{ 'pdp_v2.based_on_reviews' | t: count: section.settings.rating_count }}</div>
+    </div>
+
+    <div class="pdp-v2__bars">
+      <div class="pdp-v2__bar-row">
+        <div class="pdp-v2__bar-label">5 stars</div>
+        <div class="pdp-v2__bar-track"><div class="pdp-v2__bar-fill" style="width:{{ section.settings.pct_5 }}%"></div></div>
+        <div class="pdp-v2__bar-pct">{{ section.settings.pct_5 }}%</div>
+      </div>
+      <div class="pdp-v2__bar-row">
+        <div class="pdp-v2__bar-label">4 stars</div>
+        <div class="pdp-v2__bar-track"><div class="pdp-v2__bar-fill" style="width:{{ section.settings.pct_4 }}%"></div></div>
+        <div class="pdp-v2__bar-pct">{{ section.settings.pct_4 }}%</div>
+      </div>
+      <div class="pdp-v2__bar-row">
+        <div class="pdp-v2__bar-label">3 stars</div>
+        <div class="pdp-v2__bar-track"><div class="pdp-v2__bar-fill" style="width:{{ section.settings.pct_3 }}%"></div></div>
+        <div class="pdp-v2__bar-pct">{{ section.settings.pct_3 }}%</div>
+      </div>
+      <div class="pdp-v2__bar-row">
+        <div class="pdp-v2__bar-label">2 stars</div>
+        <div class="pdp-v2__bar-track"><div class="pdp-v2__bar-fill" style="width:{{ section.settings.pct_2 }}%"></div></div>
+        <div class="pdp-v2__bar-pct">{{ section.settings.pct_2 }}%</div>
+      </div>
+      <div class="pdp-v2__bar-row">
+        <div class="pdp-v2__bar-label">1 star</div>
+        <div class="pdp-v2__bar-track"><div class="pdp-v2__bar-fill" style="width:{{ section.settings.pct_1 }}%"></div></div>
+        <div class="pdp-v2__bar-pct">{{ section.settings.pct_1 }}%</div>
+      </div>
+    </div>
+
+    <div class="pdp-v2__reviews-controls">
+      <div class="pdp-v2__reviews-control">{{ 'pdp_v2.all_reviews' | t }} <span aria-hidden="true">&#9662;</span></div>
+      <div class="pdp-v2__reviews-control">{{ 'pdp_v2.sort_by' | t }} <span aria-hidden="true">&#9662;</span></div>
+    </div>
+
+    <div class="pdp-v2__review-list">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'review' -%}
+          <div class="pdp-v2__review" {{ block.shopify_attributes }}>
+            <div class="pdp-v2__review-head">
+              <div class="pdp-v2__review-who">
+                <div class="pdp-v2__review-avatar">{{ block.settings.name | slice: 0, 1 | upcase }}</div>
+                <div>
+                  <div class="pdp-v2__review-name">{{ block.settings.name }}</div>
+                  <div class="pdp-v2__review-place">{{ block.settings.place }}</div>
+                </div>
+              </div>
+              <div class="pdp-v2__review-date">{{ block.settings.date }}</div>
+            </div>
+            <div class="pdp-v2__review-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <div class="pdp-v2__review-text">{{ block.settings.text }}</div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <button type="button" class="pdp-v2__reviews-more">{{ 'pdp_v2.load_more' | t }}</button>
+    <div class="pdp-v2__reviews-note">Sample layout — review content binds to the live review provider.</div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Reviews",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Love from the community" },
+    { "type": "number", "id": "rating_value", "label": "Rating value", "default": 4.9 },
+    { "type": "number", "id": "rating_count", "label": "Rating count", "default": 589 },
+    { "type": "range", "id": "pct_5", "label": "5-star %", "min": 0, "max": 100, "default": 92 },
+    { "type": "range", "id": "pct_4", "label": "4-star %", "min": 0, "max": 100, "default": 6 },
+    { "type": "range", "id": "pct_3", "label": "3-star %", "min": 0, "max": 100, "default": 1 },
+    { "type": "range", "id": "pct_2", "label": "2-star %", "min": 0, "max": 100, "default": 1 },
+    { "type": "range", "id": "pct_1", "label": "1-star %", "min": 0, "max": 100, "default": 0 }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Reviewer name", "default": "Sample reviewer" },
+        { "type": "text", "id": "place", "label": "Location", "default": "United States" },
+        { "type": "text", "id": "date", "label": "Date", "default": "August" },
+        { "type": "textarea", "id": "text", "label": "Review text" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "review", "settings": { "text": "Review body, location and date all come from the live review provider — this is layout only." } },
+      { "type": "review", "settings": { "text": "Cards sit in two columns on desktop and stack on mobile; longer text truncates with a read-more link.", "place": "United States" } },
+      { "type": "review", "settings": { "text": "Short reviews are allowed to be short — no padding, no forced equal heights.", "place": "United Kingdom" } },
+      { "type": "review", "settings": { "text": "Photo reviews get a thumbnail on the right and are prioritised in the default sort.", "place": "United Kingdom" } }
+    ]
+  }
+}
+{% endschema %}

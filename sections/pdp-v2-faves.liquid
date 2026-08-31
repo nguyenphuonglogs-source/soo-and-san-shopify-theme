@@ -1,0 +1,50 @@
+<div class="pdp-v2">
+  <div class="pdp-v2__faves">
+    <h2 class="pdp-v2__section-title">{{ section.settings.heading | default: 'Customer faves' }}</h2>
+    <div class="pdp-v2__faves-grid">
+      {%- for block in section.blocks -%}
+        {%- assign fave = block.settings.product -%}
+        {%- if fave != blank -%}
+          <a class="pdp-v2__fave" href="{{ fave.url }}" {{ block.shopify_attributes }}>
+            <span class="pdp-v2__fave-image{% if fave.featured_image == blank %} pdp-v2__stripe--tight{% endif %}">
+              {%- if fave.featured_image != blank -%}
+                {{ fave.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: fave.title }}
+              {%- endif -%}
+            </span>
+            <span class="pdp-v2__fave-name">{{ fave.title }}</span>
+            <span class="pdp-v2__fave-price">
+              {%- if fave.compare_at_price and fave.compare_at_price > fave.price -%}<del>{{ fave.compare_at_price | money }}</del>{%- endif -%}
+              <ins>{{ fave.price | money }}</ins>
+            </span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Customer faves",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Customer faves" }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "product" },
+      { "type": "product" },
+      { "type": "product" },
+      { "type": "product" }
+    ]
+  }
+}
+{% endschema %}

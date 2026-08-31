@@ -1,0 +1,11 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "color_ink": "#111111",
+      "color_paper": "#FDFCF9",
+      "color_sand": "#EFEAE3",
+      "color_accent": "#A23A2A"
+    }
+  }
+}

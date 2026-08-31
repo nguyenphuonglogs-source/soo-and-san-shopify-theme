@@ -1,0 +1,88 @@
+<div class="pdp-v2">
+  <!-- mobile: accordion -->
+  <div class="pdp-v2__story pdp-v2__story--mobile pdp-v2__show-mobile" data-pdp-story>
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'tab' -%}
+        <div class="pdp-v2__story-item">
+          <button type="button" class="pdp-v2__story-trigger" data-pdp-story-tab data-pdp-story-accordion aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+            <span class="pdp-v2__story-trigger-title">{{ block.settings.title }}</span>
+            <span class="pdp-v2__story-trigger-icon" data-pdp-story-icon aria-hidden="true">{% if forloop.first %}&#8211;{% else %}+{% endif %}</span>
+          </button>
+          <div class="pdp-v2__story-panel" data-pdp-story-panel {% unless forloop.first %}hidden{% endunless %}>
+            {{ block.settings.content }}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  <!-- desktop: tab list + content -->
+  <div class="pdp-v2__story pdp-v2__story--desktop pdp-v2__show-desktop" data-pdp-story>
+    <div class="pdp-v2__story-tablist" role="tablist">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'tab' -%}
+          <button type="button" class="pdp-v2__story-tab" data-pdp-story-tab role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+            <span class="pdp-v2__story-tab-title">{{ block.settings.title }}</span>
+          </button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <div class="pdp-v2__story-panels">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'tab' -%}
+          <div class="pdp-v2__story-panel" data-pdp-story-panel role="tabpanel" {% unless forloop.first %}hidden{% endunless %}>
+            {{ block.settings.content }}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Story tabs",
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Tab",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "THE STORY BEHIND IT" },
+        { "type": "richtext", "id": "content", "label": "Content" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      {
+        "type": "tab",
+        "settings": {
+          "title": "THE STORY BEHIND IT",
+          "content": "<p>A photograph captures a moment. Art gives that moment a place to live. Every canvas begins with your photo and is designed by a person before it is ever printed.</p><p>ORIGIN: designed in-house, produced at the print lab nearest to you.</p><p>ECO: FSC-certified wood frame, water-based inks, sustainably sourced canvas.</p>"
+        }
+      },
+      {
+        "type": "tab",
+        "settings": {
+          "title": "FAQ",
+          "content": "<p>Will I see a preview? Yes — a design preview is emailed for approval before production.</p><p>What photo works best? Clear, well-lit, faces visible, subject reasonably close.</p><p>Can I request changes? Yes, we revise until the piece feels right to you.</p>"
+        }
+      },
+      {
+        "type": "tab",
+        "settings": {
+          "title": "DETAILS",
+          "content": "<p>38 mm stretched canvas · 400 gsm artist-grade cotton · premium floater frame.</p><p>Latex / UV gel print rated for long-term display permanence.</p><p>Hanging equipment is not included — confirm hardware before claiming ready-to-hang.</p>"
+        }
+      },
+      {
+        "type": "tab",
+        "settings": {
+          "title": "SHIPPING",
+          "content": "<p>Production: 72–120 hours after you approve the preview.</p><p>Transit is separate and calculated at checkout.</p><p>Arrives in protective packaging.</p>"
+        }
+      }
+    ]
+  }
+}
+{% endschema %}

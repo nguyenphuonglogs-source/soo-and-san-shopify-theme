@@ -1,0 +1,52 @@
+<div class="pdp-v2">
+  <div class="pdp-v2__newsletter">
+    <div>
+      <div class="pdp-v2__newsletter-eyebrow">{{ section.settings.eyebrow }}</div>
+      <h2 class="pdp-v2__newsletter-title">{{ section.settings.heading | default: 'Join the list' }}</h2>
+    </div>
+    {%- form 'customer', class: 'pdp-v2__newsletter-form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" name="contact[email]" class="pdp-v2__newsletter-input" placeholder="{{ 'pdp_v2.email_placeholder' | t }}" required aria-label="{{ 'pdp_v2.email_placeholder' | t }}">
+      <button type="submit" class="pdp-v2__newsletter-submit" aria-label="Subscribe">&#8594;</button>
+      {%- if form.posted_successfully? -%}
+        <p class="pdp-v2__newsletter-eyebrow">Thanks — you're on the list.</p>
+      {%- endif -%}
+    {%- endform -%}
+    <div class="pdp-v2__newsletter-social">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'social_link' -%}
+          <a href="{{ block.settings.url | default: '#' }}" {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Newsletter",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow text", "default": "Subscribe for new artwork, gift guides and quiet offers." },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Join the Soo & San list" }
+  ],
+  "blocks": [
+    {
+      "type": "social_link",
+      "name": "Social link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "IG" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "social_link", "settings": { "label": "IG" } },
+      { "type": "social_link", "settings": { "label": "TT" } },
+      { "type": "social_link", "settings": { "label": "PIN" } },
+      { "type": "social_link", "settings": { "label": "FB" } },
+      { "type": "social_link", "settings": { "label": "YT" } }
+    ]
+  }
+}
+{% endschema %}

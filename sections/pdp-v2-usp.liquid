@@ -1,0 +1,42 @@
+<div class="pdp-v2">
+  <div class="pdp-v2__usp">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'usp' -%}
+        <div class="pdp-v2__usp-item" {{ block.shopify_attributes }}>
+          {%- if block.settings.icon != blank -%}
+            {{ block.settings.icon | image_url: width: 52 | image_tag: loading: 'lazy', alt: '', class: 'pdp-v2__usp-icon' }}
+          {%- else -%}
+            <span class="pdp-v2__usp-icon"></span>
+          {%- endif -%}
+          <div class="pdp-v2__usp-title">{{ block.settings.title }}</div>
+          <div class="pdp-v2__usp-note">{{ block.settings.note }}</div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — USP row",
+  "blocks": [
+    {
+      "type": "usp",
+      "name": "USP",
+      "settings": [
+        { "type": "image_picker", "id": "icon", "label": "Icon (optional)" },
+        { "type": "text", "id": "title", "label": "Title", "default": "FREE SHIPPING" },
+        { "type": "text", "id": "note", "label": "Note", "default": "On every order, no minimum." }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "usp", "settings": { "title": "FREE SHIPPING", "note": "On every order, no minimum." } },
+      { "type": "usp", "settings": { "title": "FREE DESIGN PREVIEW", "note": "Approve the artwork before we print." } },
+      { "type": "usp", "settings": { "title": "HUMAN SUPPORT", "note": "A real person answers, not a queue." } },
+      { "type": "usp", "settings": { "title": "NAMED MATERIALS", "note": "400 gsm canvas, wood floater frame." } }
+    ]
+  }
+}
+{% endschema %}

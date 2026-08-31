@@ -1,0 +1,19 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Soo & San — PDP v2",
+    "theme_version": "1.0.0",
+    "theme_author": "Soo & San",
+    "theme_documentation_url": "",
+    "theme_support_url": ""
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      { "type": "color", "id": "color_ink", "label": "Ink (primary text)", "default": "#111111" },
+      { "type": "color", "id": "color_paper", "label": "Paper (page background)", "default": "#FDFCF9" },
+      { "type": "color", "id": "color_sand", "label": "Sand (panel background)", "default": "#EFEAE3" },
+      { "type": "color", "id": "color_accent", "label": "Accent (sale badge)", "default": "#A23A2A" }
+    ]
+  }
+]

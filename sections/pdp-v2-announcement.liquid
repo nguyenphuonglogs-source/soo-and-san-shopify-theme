@@ -1,0 +1,117 @@
+{{ 'pdp-v2.css' | asset_url | stylesheet_tag }}
+{{ 'pdp-v2.js' | asset_url | script_tag }}
+
+{%- liquid
+  assign brand = section.settings.brand_name | default: shop.name
+  assign amp_split = brand | split: ' & '
+-%}
+
+<div class="pdp-v2">
+  <div class="pdp-v2__show-mobile">
+    <div class="pdp-v2__utility">{{ section.settings.utility_message_mobile }}</div>
+  </div>
+  <div class="pdp-v2__show-desktop">
+    <div class="pdp-v2__utility">
+      <div></div>
+      <div>
+        {%- if section.settings.utility_link_url != blank -%}
+          <a href="{{ section.settings.utility_link_url }}">{{ section.settings.utility_message_desktop }} &rarr;</a>
+        {%- else -%}
+          {{ section.settings.utility_message_desktop }}
+        {%- endif -%}
+      </div>
+      <div class="pdp-v2__utility-links">
+        <span>{{ 'pdp_v2.search' | t }}</span>
+        <a href="{{ section.settings.track_order_url | default: '#' }}">TRACK YOUR ORDER</a>
+        <span>{{ section.settings.currency_label | default: 'USD $' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <header class="pdp-v2__header">
+    <div class="pdp-v2__header-menu pdp-v2__show-mobile">MENU</div>
+    <nav class="pdp-v2__nav pdp-v2__show-desktop" aria-label="Main">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'nav_link' -%}
+          <a href="{{ block.settings.url | default: '#' }}"{% if block.settings.highlight %} style="color:{{ section.settings.accent_color | default: '#A23A2A' }}"{% endif %} {{ block.shopify_attributes }}>{{ block.settings.label }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.root_url }}" class="pdp-v2__logo">
+      {%- if amp_split.size == 2 -%}
+        {{ amp_split[0] }} <em>&amp;</em> {{ amp_split[1] }}
+      {%- else -%}
+        {{ brand }}
+      {%- endif -%}
+    </a>
+
+    <div class="pdp-v2__header-bag pdp-v2__show-mobile">{{ 'pdp_v2.bag_count' | t: count: cart.item_count }}</div>
+    <div class="pdp-v2__utility-icons pdp-v2__show-desktop">
+      <span>{{ 'pdp_v2.search' | t }}</span>
+      <span>{{ 'pdp_v2.account' | t }}</span>
+      <strong>{{ 'pdp_v2.bag_count' | t: count: cart.item_count }}</strong>
+    </div>
+  </header>
+
+  <div class="pdp-v2__promo">
+    <div class="pdp-v2__promo-copy">
+      {{ section.settings.promo_text }}
+      {%- if section.settings.promo_code != blank %} · CODE: {{ section.settings.promo_code }}{% endif -%}
+    </div>
+    {%- if section.settings.show_countdown -%}
+      <div class="pdp-v2__clock" data-pdp-countdown="{{ section.settings.countdown_target }}">
+        <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="h">00</span><span class="pdp-v2__clock-l">HRS</span></div>
+        <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="m">00</span><span class="pdp-v2__clock-l">MIN</span></div>
+        <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="s">00</span><span class="pdp-v2__clock-l">SEC</span></div>
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Announcement",
+  "settings": [
+    { "type": "text", "id": "brand_name", "label": "Brand name", "default": "Soo & San", "info": "Use \"Name & Name\" to italicize the ampersand like the design." },
+    { "type": "text", "id": "utility_message_mobile", "label": "Mobile utility bar text", "default": "FREE SHIPPING ON ALL ORDERS" },
+    { "type": "text", "id": "utility_message_desktop", "label": "Desktop utility bar text", "default": "SUBSCRIBE & GET 15% OFF YOUR FIRST ARTWORK" },
+    { "type": "url", "id": "utility_link_url", "label": "Desktop utility bar link" },
+    { "type": "url", "id": "track_order_url", "label": "Track your order link" },
+    { "type": "text", "id": "currency_label", "label": "Currency label", "default": "USD $" },
+    { "type": "color", "id": "accent_color", "label": "Nav highlight color", "default": "#A23A2A" },
+    {
+      "type": "textarea",
+      "id": "promo_text",
+      "label": "Promo bar text",
+      "default": "BUY 2, GET AN EXTRA 30% OFF SITEWIDE"
+    },
+    { "type": "text", "id": "promo_code", "label": "Promo code", "default": "SUMMER" },
+    { "type": "checkbox", "id": "show_countdown", "label": "Show countdown", "default": true },
+    { "type": "text", "id": "countdown_target", "label": "Countdown target (ISO date, e.g. 2026-09-07T00:00:00)", "default": "" }
+  ],
+  "blocks": [
+    {
+      "type": "nav_link",
+      "name": "Nav link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "NEW" },
+        { "type": "url", "id": "url", "label": "Link" },
+        { "type": "checkbox", "id": "highlight", "label": "Highlight (accent color)", "default": false }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "nav_link", "settings": { "label": "ANNIVERSARY" } },
+      { "type": "nav_link", "settings": { "label": "YOUR STORY" } },
+      { "type": "nav_link", "settings": { "label": "YOUR PEOPLE" } },
+      { "type": "nav_link", "settings": { "label": "YOUR HOME" } },
+      { "type": "nav_link", "settings": { "label": "BEST SELLERS" } },
+      { "type": "nav_link", "settings": { "label": "NEW" } },
+      { "type": "nav_link", "settings": { "label": "GIFT GUIDE" } },
+      { "type": "nav_link", "settings": { "label": "THE SUMMER EDIT", "highlight": true } }
+    ]
+  }
+}
+{% endschema %}

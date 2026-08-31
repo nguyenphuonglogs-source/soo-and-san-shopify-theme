@@ -1,0 +1,352 @@
+{%- liquid
+  assign frame_option_name = section.settings.frame_option_name | default: 'Frame'
+  assign size_option_name = section.settings.size_option_name | default: 'Size'
+  assign frame_position = 0
+  assign size_position = 0
+  for opt in product.options_with_values
+    if opt.name == frame_option_name
+      assign frame_position = forloop.index
+      assign frame_option = opt
+    endif
+    if opt.name == size_option_name
+      assign size_position = forloop.index
+      assign size_option = opt
+    endif
+  endfor
+  assign frame_index = frame_position | minus: 1
+  assign size_index = size_position | minus: 1
+
+  assign current_variant = product.selected_or_first_available_variant
+  assign priority_product = section.settings.priority_preview_product
+  assign priority_variant = priority_product.selected_or_first_available_variant
+-%}
+
+<div class="pdp-v2" data-pdp-hero
+  data-money-format="{{ shop.money_format | escape }}"
+  data-size-option-position="{{ size_position }}"
+  data-initial-size-value="{{ current_variant.options[size_index] }}"
+  {% if priority_variant %}
+    data-priority-variant-id="{{ priority_variant.id }}"
+    data-priority-price="{{ priority_variant.price }}"
+    data-priority-available="{{ priority_variant.available }}"
+  {% else %}
+    data-priority-price="0"
+  {% endif %}
+  data-upload-hint-default="{{ 'pdp_v2.upload_hint_default' | t }}"
+  data-upload-cta-default="{{ 'pdp_v2.upload_cta_default' | t }}"
+  data-upload-cta-added="{{ 'pdp_v2.upload_cta_added' | t }}">
+
+  <script type="application/json" data-pdp-variants>{{ product.variants | json }}</script>
+
+  <div class="pdp-v2__hero">
+
+    <!-- ================= MOBILE GALLERY ================= -->
+    <div class="pdp-v2__gallery-mobile pdp-v2__show-mobile">
+      {%- if section.settings.show_sale_badge -%}
+        <span class="pdp-v2__sale-badge">{{ section.settings.sale_badge_text }}</span>
+      {%- endif -%}
+      <div class="pdp-v2__carousel" data-pdp-gallery data-pdp-gallery-track>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'mosaic_tile' -%}
+            <div class="pdp-v2__carousel-slide{% if block.settings.image == blank %} pdp-v2__carousel-slide--empty pdp-v2__stripe{% endif %}" data-pdp-gallery-slide {{ block.shopify_attributes }}>
+              {%- if block.settings.image != blank -%}
+                {%- assign alt_text = block.settings.image.alt | default: block.settings.slot_label -%}
+                {{ block.settings.image | image_url: width: 900 | image_tag: loading: 'lazy', alt: alt_text }}
+              {%- else -%}
+                <div class="pdp-v2__gallery-caption">{{ block.settings.slot_label }}<br>swipeable, pinch to zoom</div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- assign inset_block = section.blocks | where: 'type', 'mosaic_tile' | first -%}
+      {%- if section.blocks.size > 1 -%}
+        {%- assign inset_block = section.blocks[1] -%}
+        <div class="pdp-v2__gallery-inset{% if inset_block.settings.image == blank %} pdp-v2__stripe--fine{% endif %}">
+          {%- if inset_block.settings.image != blank -%}
+            {{ inset_block.settings.image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      <div class="pdp-v2__gallery-controls">
+        <div class="pdp-v2__dots">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'mosaic_tile' -%}
+              <button type="button" class="pdp-v2__dot" data-pdp-gallery-dot aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="Go to image {{ forloop.index }}"></button>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {%- if section.settings.video_url != blank -%}
+          <a class="pdp-v2__video-link" href="{{ section.settings.video_url }}">&#9654; {{ 'pdp_v2.video' | t }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- ================= DESKTOP MOSAIC ================= -->
+    <div class="pdp-v2__mosaic pdp-v2__show-desktop">
+      {%- if section.settings.show_sale_badge -%}
+        <span class="pdp-v2__sale-badge">{{ section.settings.sale_badge_text }}</span>
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'mosaic_tile' -%}
+          <div class="pdp-v2__mosaic-tile pdp-v2__mosaic-tile--{{ block.settings.layout }}{% if block.settings.image == blank %} pdp-v2__stripe{% endif %}" {{ block.shopify_attributes }}>
+            {%- if block.settings.image != blank -%}
+              {%- assign alt_text = block.settings.image.alt | default: block.settings.slot_label -%}
+              {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: alt_text }}
+            {%- else -%}
+              <div class="pdp-v2__gallery-caption">{{ block.settings.slot_label }}</div>
+            {%- endif -%}
+            {%- if block.settings.tag_text != blank -%}
+              <div class="pdp-v2__mosaic-tag">{{ block.settings.tag_text }}</div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <!-- ================= CONVERSION PANEL ================= -->
+    {%- form 'product', product, id: 'pdp-v2-product-form', class: 'pdp-v2__panel' -%}
+      <input type="hidden" name="id" value="{{ current_variant.id }}" data-pdp-variant-id>
+
+      <div class="pdp-v2__slot-banner pdp-v2__banner">
+        <div class="pdp-v2__banner-title">{{ section.settings.banner_title }}</div>
+        <div class="pdp-v2__banner-note pdp-v2__show-desktop">{{ section.settings.banner_note }}</div>
+        <div class="pdp-v2__banner-note pdp-v2__show-mobile">{{ section.settings.banner_note_mobile | default: section.settings.banner_note }}</div>
+      </div>
+
+      <div class="pdp-v2__slot-breadcrumb pdp-v2__breadcrumb">
+        <a href="{{ routes.root_url }}">{{ 'pdp_v2.breadcrumb_home' | t }}</a> &nbsp;&rsaquo;&nbsp;
+        <span class="pdp-v2__show-desktop"><a href="{{ shop.url }}/collections/all">{{ 'pdp_v2.breadcrumb_shop' | t }}</a> &nbsp;&rsaquo;&nbsp; <strong>{{ section.settings.breadcrumb_category | default: product.type }}</strong></span>
+        <span class="pdp-v2__show-mobile"><a href="{{ shop.url }}/collections/all">{{ 'pdp_v2.breadcrumb_shop' | t }}</a></span>
+      </div>
+
+      <h1 class="pdp-v2__slot-title pdp-v2__title">{{ product.title }}</h1>
+
+      <div class="pdp-v2__slot-rating pdp-v2__rating">
+        <span class="pdp-v2__stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span style="font-weight:500">{{ section.settings.rating_value }}</span>
+        <a class="pdp-v2__rating-link" href="{{ section.settings.reviews_anchor | default: '#pdp-v2-reviews' }}">{{ section.settings.rating_count }} {{ 'pdp_v2.reviews_suffix' | t }}</a>
+      </div>
+
+      <div class="pdp-v2__slot-price pdp-v2__price-row">
+        <span class="pdp-v2__price-compare" data-pdp-price-compare {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+        <span class="pdp-v2__price-now" data-pdp-price-now>{{ current_variant.price | money }}</span>
+        <span class="pdp-v2__price-save" data-pdp-price-save {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>
+          {%- if current_variant.compare_at_price > current_variant.price -%}
+            Save {{ current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round }}%
+          {%- endif -%}
+        </span>
+      </div>
+
+      <div class="pdp-v2__slot-payin4 pdp-v2__pay-in-4">
+        {%- if section.settings.show_pay_in_4 -%}{{ 'pdp_v2.pay_in_4' | t }}{%- endif -%}
+      </div>
+
+      <a href="{{ section.settings.upload_anchor_id | default: '#pdp-v2-upload' }}" class="pdp-v2__slot-continue pdp-v2__cta pdp-v2__show-mobile">{{ 'pdp_v2.continue_customization' | t }}</a>
+
+      <div class="pdp-v2__slot-upload pdp-v2__field" id="pdp-v2-upload">
+        <div class="pdp-v2__field-head">
+          <div class="pdp-v2__field-label">{{ 'pdp_v2.upload_label' | t }}</div>
+          <a class="pdp-v2__field-guide" href="{{ section.settings.photo_guide_url | default: '#' }}">{{ 'pdp_v2.photo_guide' | t }}</a>
+        </div>
+        <label class="pdp-v2__upload">
+          <input type="file" name="properties[Photo]" accept="image/png,image/jpeg" data-pdp-upload-input>
+          <span aria-hidden="true">&#11014;</span><span data-pdp-upload-label>{{ 'pdp_v2.upload_cta_default' | t }}</span>
+        </label>
+        <div class="pdp-v2__upload-hint" data-pdp-upload-hint>{{ 'pdp_v2.upload_hint_default' | t }}</div>
+      </div>
+
+      <div class="pdp-v2__slot-lines pdp-v2__field">
+        <div class="pdp-v2__field-head">
+          <div class="pdp-v2__field-label">{{ 'pdp_v2.line_one_label' | t }} <span>{{ 'pdp_v2.optional' | t }}</span></div>
+          <a class="pdp-v2__field-guide" href="{{ section.settings.title_inspo_url | default: '#' }}">{{ 'pdp_v2.title_inspo' | t }}</a>
+        </div>
+        <input class="pdp-v2__input" type="text" name="properties[First text line]" placeholder="e.g. A love like ours" maxlength="60">
+        <div class="pdp-v2__field-label">{{ 'pdp_v2.line_two_label' | t }} <span>{{ 'pdp_v2.optional' | t }}</span></div>
+        <input class="pdp-v2__input" type="text" name="properties[Second text line]" placeholder="e.g. Emily &amp; James · 06.14.2025" maxlength="60">
+      </div>
+
+      <div class="pdp-v2__slot-frame pdp-v2__field">
+        <div class="pdp-v2__field-head">
+          <div class="pdp-v2__field-label">{{ 'pdp_v2.frame_label' | t }}</div>
+          <a class="pdp-v2__field-guide" href="{{ section.settings.frame_guide_url | default: '#' }}">{{ 'pdp_v2.frame_guide' | t }}</a>
+        </div>
+        <div class="pdp-v2__frames">
+          {%- for value in frame_option.values -%}
+            {%- assign swatch = nil -%}
+            {%- for candidate in section.blocks -%}
+              {%- if candidate.type == 'frame_swatch' and candidate.settings.option_value == value -%}
+                {%- assign swatch = candidate -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+            <button type="button" class="pdp-v2__frame" data-pdp-option-select data-option-position="{{ frame_position }}" data-option-value="{{ value | escape }}" aria-current="{% if current_variant.options[frame_index] == value %}true{% else %}false{% endif %}">
+              <span class="pdp-v2__frame-swatch" style="background:{{ swatch.settings.swatch_color | default: '#EFEAE3' }}">
+                <span class="pdp-v2__frame-swatch-inner{% if swatch.settings.pattern == 'grain' %} pdp-v2__stripe--fine{% endif %}"
+                  {%- if swatch.settings.pattern == 'diagonal' -%}
+                    style="background:linear-gradient(135deg,transparent 47%,#AAA49C 47%,#AAA49C 53%,transparent 53%),#FDFCF9"
+                  {%- endif -%}></span>
+                <span class="pdp-v2__frame-swatch-ring"></span>
+              </span>
+              <span class="pdp-v2__frame-name">{{ value }}</span>
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="pdp-v2__slot-size pdp-v2__field">
+        <div class="pdp-v2__field-head">
+          <div class="pdp-v2__field-label">{{ 'pdp_v2.size_label' | t }}</div>
+          <a class="pdp-v2__field-guide" href="{{ section.settings.size_guide_url | default: '#' }}">{{ 'pdp_v2.size_guide' | t }}</a>
+        </div>
+        <button type="button" class="pdp-v2__size-control" data-pdp-size-cycle>
+          <span data-pdp-size-label>{{ current_variant.options[size_index] }}</span>
+          <span class="pdp-v2__caret" aria-hidden="true">&#9662;</span>
+        </button>
+      </div>
+
+      {%- if priority_product != blank -%}
+        <div class="pdp-v2__slot-upsell pdp-v2__upsell">
+          <div class="pdp-v2__upsell-head">{{ section.settings.priority_title | default: 'PRIORITY PREVIEW: SEE IT IN 24 HOURS' }}</div>
+          <button type="button" class="pdp-v2__upsell-body" data-pdp-priority-toggle aria-pressed="false">
+            <span class="pdp-v2__upsell-thumb{% if priority_product.featured_image == blank %} pdp-v2__stripe--fine{% endif %}">
+              {%- if priority_product.featured_image != blank -%}
+                {{ priority_product.featured_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: '' }}
+              {%- endif -%}
+            </span>
+            <span class="pdp-v2__upsell-copy">
+              <span>{{ priority_product.title }}</span>
+              <small>+{{ priority_variant.price | money }}</small>
+            </span>
+            <span class="pdp-v2__radio"><span class="pdp-v2__radio-dot"></span></span>
+          </button>
+        </div>
+      {%- endif -%}
+
+      <div class="pdp-v2__slot-checkout pdp-v2__checkout">
+        <div class="pdp-v2__subtotal">
+          <div class="pdp-v2__subtotal-label">{{ 'pdp_v2.subtotal' | t }}</div>
+          <div class="pdp-v2__subtotal-value">
+            <span class="pdp-v2__subtotal-compare" data-pdp-subtotal-compare {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+            <span class="pdp-v2__subtotal-now" data-pdp-subtotal-now>{{ current_variant.price | money }}</span>
+          </div>
+        </div>
+        <button type="submit" class="pdp-v2__cta" data-pdp-cta {% unless current_variant.available %}disabled{% endunless %}>
+          {%- if current_variant.available -%}{{ 'pdp_v2.add_to_bag' | t }}{%- else -%}Sold out{%- endif -%}
+        </button>
+        <div class="pdp-v2__form-error" data-pdp-form-error role="alert"></div>
+
+        {%- if section.settings.show_countdown -%}
+          <div class="pdp-v2__promo-repeat">
+            <div class="pdp-v2__promo-repeat-copy">
+              <strong>{{ section.settings.promo_repeat_text | default: 'BUY 2, GET YOUR EXTRA 30% OFF · CODE: SUMMER' }}</strong>
+            </div>
+            <div class="pdp-v2__clock pdp-v2__clock--repeat" data-pdp-countdown="{{ section.settings.countdown_target }}">
+              <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="h">00</span><span class="pdp-v2__clock-l">HRS</span></div>
+              <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="m">00</span><span class="pdp-v2__clock-l">MIN</span></div>
+              <div class="pdp-v2__clock-cell"><span class="pdp-v2__clock-v" data-unit="s">00</span><span class="pdp-v2__clock-l">SEC</span></div>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="pdp-v2__slot-trust pdp-v2__trust">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'trust_row' -%}
+            <div class="pdp-v2__trust-row" {{ block.shopify_attributes }}><span class="pdp-v2__trust-icon"></span>{{ block.settings.text }}</div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endform -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Hero",
+  "settings": [
+    { "type": "text", "id": "frame_option_name", "label": "Frame option name", "default": "Frame", "info": "Must match a product option name exactly." },
+    { "type": "text", "id": "size_option_name", "label": "Size option name", "default": "Size", "info": "Must match a product option name exactly." },
+    { "type": "checkbox", "id": "show_sale_badge", "label": "Show sale badge", "default": true },
+    { "type": "text", "id": "sale_badge_text", "label": "Sale badge text", "default": "30% OFF" },
+    { "type": "url", "id": "video_url", "label": "Gallery video link (mobile)" },
+    { "type": "text", "id": "banner_title", "label": "Preview banner title", "default": "PREVIEW WITH UNLIMITED REVISIONS" },
+    { "type": "text", "id": "banner_note", "label": "Preview banner note (desktop)", "default": "Your design preview is emailed for approval before we print." },
+    { "type": "text", "id": "banner_note_mobile", "label": "Preview banner note (mobile)", "default": "Preview emailed for approval before we print." },
+    { "type": "text", "id": "breadcrumb_category", "label": "Breadcrumb category label" },
+    { "type": "number", "id": "rating_value", "label": "Rating value", "default": 4.9 },
+    { "type": "number", "id": "rating_count", "label": "Rating count", "default": 589 },
+    { "type": "text", "id": "reviews_anchor", "label": "Reviews anchor link", "default": "#pdp-v2-reviews" },
+    { "type": "checkbox", "id": "show_pay_in_4", "label": "Show \"Pay in 4\" line", "default": false, "info": "Design note: shown only when the installments provider is live." },
+    { "type": "url", "id": "photo_guide_url", "label": "Photo guide link" },
+    { "type": "url", "id": "title_inspo_url", "label": "Title inspo link" },
+    { "type": "url", "id": "frame_guide_url", "label": "Frame guide link" },
+    { "type": "url", "id": "size_guide_url", "label": "Size guide link" },
+    {
+      "type": "product",
+      "id": "priority_preview_product",
+      "label": "Priority preview add-on product",
+      "info": "A simple product whose price is added to the subtotal as a second cart line item when toggled on."
+    },
+    { "type": "text", "id": "priority_title", "label": "Priority preview upsell heading", "default": "PRIORITY PREVIEW: SEE IT IN 24 HOURS" },
+    { "type": "checkbox", "id": "show_countdown", "label": "Show promo + countdown repeat under Add to Bag", "default": true },
+    { "type": "text", "id": "countdown_target", "label": "Countdown target (ISO date)", "default": "" },
+    { "type": "text", "id": "promo_repeat_text", "label": "Promo repeat text", "default": "BUY 2, GET YOUR EXTRA 30% OFF · CODE: SUMMER" }
+  ],
+  "blocks": [
+    {
+      "type": "mosaic_tile",
+      "name": "Gallery image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "slot_label", "label": "Placeholder caption (shown until an image is set)" },
+        { "type": "select", "id": "layout", "label": "Desktop tile size", "default": "square", "options": [
+          { "value": "square", "label": "Square (1 column)" },
+          { "value": "wide", "label": "Wide (2 columns, 16:9)" }
+        ] },
+        { "type": "text", "id": "tag_text", "label": "Overlay tag (optional)" }
+      ]
+    },
+    {
+      "type": "frame_swatch",
+      "name": "Frame swatch",
+      "settings": [
+        { "type": "text", "id": "option_value", "label": "Matching \"Frame\" option value", "info": "Must match a variant option value exactly, e.g. \"Black\"." },
+        { "type": "color", "id": "swatch_color", "label": "Swatch color", "default": "#EFEAE3" },
+        { "type": "select", "id": "pattern", "label": "Swatch pattern", "default": "solid", "options": [
+          { "value": "solid", "label": "Solid" },
+          { "value": "grain", "label": "Wood grain" },
+          { "value": "diagonal", "label": "Diagonal line (no frame)" }
+        ] }
+      ]
+    },
+    {
+      "type": "trust_row",
+      "name": "Trust row",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Free unlimited revisions" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "mosaic_tile", "settings": { "slot_label": "hero — framed artwork in room", "layout": "square" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "trust / press quote card", "layout": "square" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "made by real artists", "layout": "square", "tag_text": "MADE BY REAL ARTISTS" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "artwork close-up", "layout": "square" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "lifestyle — living room", "layout": "wide" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "scale reference — hanging", "layout": "wide", "tag_text": "" } },
+      { "type": "mosaic_tile", "settings": { "slot_label": "before → after", "layout": "wide" } },
+      { "type": "frame_swatch", "settings": { "option_value": "Black", "swatch_color": "#191817", "pattern": "solid" } },
+      { "type": "frame_swatch", "settings": { "option_value": "White", "swatch_color": "#F4F1EC", "pattern": "solid" } },
+      { "type": "frame_swatch", "settings": { "option_value": "Walnut", "swatch_color": "#6B4C34", "pattern": "grain" } },
+      { "type": "frame_swatch", "settings": { "option_value": "Natural", "swatch_color": "#C8A97E", "pattern": "grain" } },
+      { "type": "frame_swatch", "settings": { "option_value": "No frame", "swatch_color": "#FDFCF9", "pattern": "diagonal" } },
+      { "type": "trust_row", "settings": { "text": "Free unlimited revisions" } },
+      { "type": "trust_row", "settings": { "text": "Designed by real artists" } },
+      { "type": "trust_row", "settings": { "text": "Free shipping on all orders" } },
+      { "type": "trust_row", "settings": { "text": "Framed at a lab near you" } }
+    ]
+  }
+}
+{% endschema %}

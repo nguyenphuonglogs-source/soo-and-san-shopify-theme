@@ -1,0 +1,90 @@
+<div class="pdp-v2">
+  <footer class="pdp-v2__footer">
+    <div class="pdp-v2__footer-top pdp-v2__show-desktop">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'column' -%}
+          <div class="pdp-v2__footer-col-group" {{ block.shopify_attributes }}>
+            <div class="pdp-v2__footer-col-heading">{{ block.settings.heading }}</div>
+            <div class="pdp-v2__footer-links">
+              {%- for link in block.settings.menu.links -%}
+                <a class="pdp-v2__footer-link" href="{{ link.url }}">{{ link.title }}</a>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+      <div class="pdp-v2__footer-social">
+        <div class="pdp-v2__footer-col-heading">FOLLOW</div>
+        <div class="pdp-v2__footer-social-row">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'social_link' -%}
+              <a href="{{ block.settings.url | default: '#' }}">{{ block.settings.label }}</a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    <div class="pdp-v2__show-mobile">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'column' -%}
+          <details>
+            <summary class="pdp-v2__footer-col">{{ block.settings.heading }} <span class="pdp-v2__footer-col-plus">+</span></summary>
+            <div style="padding:0 0 14px;display:flex;flex-direction:column;gap:10px">
+              {%- for link in block.settings.menu.links -%}
+                <a class="pdp-v2__footer-link" style="color:rgba(237,233,227,0.85);font-size:12px" href="{{ link.url }}">{{ link.title }}</a>
+              {%- endfor -%}
+            </div>
+          </details>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="pdp-v2__footer-payments">
+      {%- for type in shop.enabled_payment_types -%}
+        {{ type | payment_type_svg_tag: class: 'pdp-v2__footer-payment' }}
+      {%- endfor -%}
+    </div>
+
+    <div class="pdp-v2__footer-bottom">
+      {%- assign current_year = 'now' | date: '%Y' -%}
+      <div class="pdp-v2__footer-copy">{{ 'pdp_v2.rights_reserved' | t: year: current_year, shop: shop.name }}</div>
+    </div>
+  </footer>
+</div>
+
+{% schema %}
+{
+  "name": "PDP v2 — Footer",
+  "blocks": [
+    {
+      "type": "column",
+      "name": "Link column",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "ABOUT US" },
+        { "type": "link_list", "id": "menu", "label": "Menu" }
+      ]
+    },
+    {
+      "type": "social_link",
+      "name": "Social link",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "INSTAGRAM" },
+        { "type": "url", "id": "url", "label": "Link" }
+      ]
+    }
+  ],
+  "default": {
+    "blocks": [
+      { "type": "column", "settings": { "heading": "ABOUT GIFTS" } },
+      { "type": "column", "settings": { "heading": "ABOUT US" } },
+      { "type": "column", "settings": { "heading": "ABOUT YOU" } },
+      { "type": "social_link", "settings": { "label": "INSTAGRAM" } },
+      { "type": "social_link", "settings": { "label": "TIKTOK" } },
+      { "type": "social_link", "settings": { "label": "PINTEREST" } },
+      { "type": "social_link", "settings": { "label": "FACEBOOK" } },
+      { "type": "social_link", "settings": { "label": "YOUTUBE" } }
+    ]
+  }
+}
+{% endschema %}
