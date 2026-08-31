@@ -1,3 +1,6 @@
+{{ 'pdp-v2.css' | asset_url | stylesheet_tag }}
+{{ 'pdp-v2.js' | asset_url | script_tag }}
+
 {%- liquid
   assign frame_option_name = section.settings.frame_option_name | default: 'Frame'
   assign size_option_name = section.settings.size_option_name | default: 'Size'
